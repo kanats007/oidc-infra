@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  # mysql:
+  #   image: mysql:8.0.34
+  #   container_name: mysql
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #   volumes:
+  #     - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+  #     - ./mysql/init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - sample_app_network
+
+  postgres:
+    container_name: postgres
+    image: postgres:16.2
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - sample_app_db_volume:/dev/shm
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - ./postgres/postgres.conf:/usr/share/postgresql/postgresql.conf.sample
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    networks:
+      - sample_app_network
+
+  api:
+    build:
+      context: ./php/
+      dockerfile: Dockerfile
+    container_name: api
+    volumes:
+      - ../example-api:/var/www/app/
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+    working_dir: /var/www/app/
+    command: ["bash", "-c", "composer install && php-fpm -F"]
+    depends_on:
+      - postgres
+      # - mysql
+    networks:
+      - sample_app_network
+
+  nginx:
+    image: nginx:1.23.3
+    container_name: nginx
+    ports:
+      - 8001:8001
+    volumes:
+      - ../example-api/public:/var/www/app/public
+      - ./nginx/php.conf:/etc/nginx/conf.d/php.conf
+    depends_on:
+      - api
+    networks:
+      - sample_app_network
+
+volumes:
+  keycloak_db_volume:
+    name: keycloak_db_volume
+  sample_app_db_volume:
+    name: sample_app_db_volume
+
+networks:
+  sample_app_network:
+    name: sample_app_network
