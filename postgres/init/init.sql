@@ -1,5 +1,14 @@
 -- DB作成
+DROP DATABASE IF EXISTS laravel;
 CREATE DATABASE laravel;
+
+DROP DATABASE IF EXISTS keycloak_db;
+CREATE DATABASE keycloak_db;
+
+-- -- スキーマ作成
+\c keycloak_db;
+DROP SCHEMA IF EXISTS keycloak;
+CREATE SCHEMA keycloak AUTHORIZATION postgres;
 
 -- -- 作成したDBへ切り替え
 -- \c bs_work_report_db
