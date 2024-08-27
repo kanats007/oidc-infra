@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # mysql:
   #   image: mysql:8.0.34
@@ -13,7 +11,6 @@ services:
   #     - ./mysql/init:/docker-entrypoint-initdb.d
   #   networks:
   #     - sample_app_network
-
   postgres:
     container_name: postgres
     image: postgres:16.2
@@ -21,15 +18,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - sample_app_db_volume:/dev/shm
+      - sample_app_db_volume:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d
-      - ./postgres/postgres.conf:/usr/share/postgresql/postgresql.conf.sample
+      # - ./postgres/postgres.conf:/usr/share/postgresql/postgresql.conf.sample
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     networks:
       - sample_app_network
-
   api:
     build:
       context: ./php/
@@ -45,7 +41,6 @@ services:
       # - mysql
     networks:
       - sample_app_network
-
   nginx:
     image: nginx:1.23.3
     container_name: nginx
@@ -58,10 +53,37 @@ services:
       - api
     networks:
       - sample_app_network
+  ui:
+    build:
+      context: ./node/
+      dockerfile: Dockerfile
+    container_name: ui
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../next-app/:/var/www/app/
+    working_dir: /var/www/app/
+    command: ["bash", "-c", "npm install && npm run dev"]
+    networks:
+      - sample_app_network
+  keycloak:
+    build:
+      context: ./keycloak/
+      dockerfile: Dockerfile
+    container_name: keycloak
+    ports:
+      - 8080:8080
+    command:
+      - start-dev
+    depends_on:
+      - postgres
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    networks:
+      - sample_app_network
 
 volumes:
-  keycloak_db_volume:
-    name: keycloak_db_volume
   sample_app_db_volume:
     name: sample_app_db_volume
 
