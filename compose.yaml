@@ -34,6 +34,7 @@ services:
     volumes:
       - ../example-api:/var/www/app/
       - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     working_dir: /var/www/app/
     command: ["bash", "-c", "composer install && php-fpm -F"]
     depends_on:

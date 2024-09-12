@@ -9,12 +9,14 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 # mysqlの場合
 # RUN apt-get update && \
 # 	apt-get install -y git unzip libzip-dev libicu-dev libonig-dev && \
-# 	docker-php-ext-install intl pdo_mysql zip bcmath
+# 	docker-php-ext-install intl pdo_mysql zip bcmath && \
+# 	pecl install xdebug
 
 # postgresqlの場合
 RUN apt-get update && \
 	apt-get install -y git unzip libzip-dev libicu-dev libonig-dev libpq-dev && \
-	docker-php-ext-install intl pdo_pgsql zip bcmath
+	docker-php-ext-install intl pdo_pgsql zip bcmath && \
+	pecl install xdebug
 
 WORKDIR /var/www/app
 
