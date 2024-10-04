@@ -11,16 +11,30 @@ services:
   #     - ./mysql/init:/docker-entrypoint-initdb.d
   #   networks:
   #     - sample_app_network
-  postgres:
-    container_name: postgres
+  api_db:
+    container_name: api_db
+    image: postgres:16.2
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - api_db_volume:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      # - ./postgres/postgres.conf:/usr/share/postgresql/postgresql.conf.sample
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    networks:
+      - sample_app_network
+  keycloak_db:
+    container_name: keycloak_db
     image: postgres:16.2
     restart: always
     ports:
       - "5432:5432"
     volumes:
-      - sample_app_db_volume:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
-      # - ./postgres/postgres.conf:/usr/share/postgresql/postgresql.conf.sample
+      - keycloak_db_volume:/var/lib/postgresql/data
+      - ./postgres_keycloak/init:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
@@ -38,8 +52,7 @@ services:
     working_dir: /var/www/app/
     command: ["bash", "-c", "composer install && php-fpm -F"]
     depends_on:
-      - postgres
-      # - mysql
+      - api_db
     networks:
       - sample_app_network
   nginx:
@@ -77,7 +90,7 @@ services:
     command:
       - start-dev
     depends_on:
-      - postgres
+      - keycloak_db
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -85,8 +98,10 @@ services:
       - sample_app_network
 
 volumes:
-  sample_app_db_volume:
-    name: sample_app_db_volume
+  api_db_volume:
+    name: api_db_volume
+  keycloak_db_volume:
+    name: keycloak_db_volume
 
 networks:
   sample_app_network:

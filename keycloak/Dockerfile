@@ -14,7 +14,7 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 # change these values to point to a running postgres instance
 ENV KC_DB=postgres
-ENV KC_DB_URL_HOST=postgres
+ENV KC_DB_URL_HOST=keycloak_db
 ENV KC_DB_URL_PORT=5432
 ENV KC_DB_URL_DATABASE=keycloak_db
 ENV KC_DB_SCHEMA=keycloak
