@@ -50,7 +50,7 @@ services:
       - ./php/php.ini:/usr/local/etc/php/php.ini
       - ./php/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     working_dir: /var/www/app/
-    command: ["bash", "-c", "composer install && php-fpm -F"]
+    command: [ "bash", "-c", "composer install && php-fpm -F" ]
     depends_on:
       - api_db
     networks:
@@ -77,7 +77,7 @@ services:
     volumes:
       - ../next-app/:/var/www/app/
     working_dir: /var/www/app/
-    command: ["bash", "-c", "npm install && npm run dev"]
+    command: [ "bash", "-c", "npm install && npm run dev" ]
     networks:
       - sample_app_network
   keycloak:
@@ -94,6 +94,7 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME=http://localhost:8080/
     networks:
       - sample_app_network
 
