@@ -6,8 +6,9 @@
 1. place laravel project to the same director of this project
 
 ```
-|-- laravel
-|-- infra
+|-- example-api # backend
+|-- next-app # frontend
+|-- oidc-infra
 ```
 
 2. `docker compose build`
