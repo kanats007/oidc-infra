@@ -7,7 +7,7 @@
 
 ```
 |-- example-api # backend
-|-- next-app # frontend
+|-- example-ui # frontend
 |-- oidc-infra
 ```
 

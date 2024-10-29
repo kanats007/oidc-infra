@@ -75,7 +75,7 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - ../next-app/:/var/www/app/
+      - ../example-ui/:/var/www/app/
     working_dir: /var/www/app/
     command: [ "bash", "-c", "npm install && npm run dev" ]
     networks:
@@ -85,6 +85,8 @@ services:
       context: ./keycloak/
       dockerfile: Dockerfile
     container_name: keycloak
+    # volumes:
+    #   - ./keycloak/themes:/opt/keycloak/themes
     ports:
       - 8080:8080
     command:
